@@ -53,3 +53,10 @@ body {
 .shadow-solid-bottom {
   box-shadow: 0 6px 0 0 color-mix(in srgb, var(--tw-shadow-color) 50%, black);
 }
+
+.rippled-border {
+  box-shadow: 
+    0 0 0 15px color-mix(in srgb, var(--color-dark-text) 40%, transparent),
+    0 0 0 40px color-mix(in srgb, var(--color-dark-text) 30%, transparent),
+    0 0 0 75px color-mix(in srgb, var(--color-dark-text) 20%, transparent);
+}

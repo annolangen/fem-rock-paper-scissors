@@ -97,9 +97,9 @@ const rulesModalHtml = html`<div
   </button>
 </div>`;
 
-const choiceHtml = (choice: Choice) =>
+const choiceHtml = (choice: Choice, extraClass = "") =>
   html` <button
-    class="${choice.borderColor} ${choice.shadowColor} shadow-solid-bottom relative rounded-full border-16"
+    class="${choice.borderColor} ${choice.shadowColor} ${extraClass} shadow-solid-bottom relative rounded-full border-16"
   >
     <span
       class="flex h-24 w-24 items-center justify-center rounded-full bg-slate-300"
@@ -108,7 +108,7 @@ const choiceHtml = (choice: Choice) =>
     </span>
   </button>`;
 
-const pickableChoiceHtml = (c: Choice) =>
+const pickableChoiceHtml = (c: Choice, extraClass = "") =>
   html`<div @click="${() => pick(c)}">${choiceHtml(c)}</div>`;
 
 const step1Html = () => html`
@@ -157,7 +157,10 @@ const step3Html = () => html`
 
 const step4Html = () => html`
   <div class="flex flex-col justify-between">
-    ${twoChoicesHtml(choiceHtml(state.youPick), choiceHtml(state.housePick))}
+    ${twoChoicesHtml(
+      choiceHtml(state.youPick, "rippled-border"),
+      choiceHtml(state.housePick)
+    )}
     <h1
       class="mt-16 mb-4 self-center text-5xl font-bold tracking-wider text-white"
     >
