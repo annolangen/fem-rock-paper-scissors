@@ -5,6 +5,35 @@ import rock from "url:./images/icon-rock.svg";
 import triangle from "url:./images/bg-triangle.svg";
 import rules from "url:./images/image-rules.svg";
 import close from "url:./images/icon-close.svg";
+import { TemplateResult } from "lit-html";
+
+interface Choice {
+  name: string;
+  borderColor: string;
+  shadowColor: string;
+  imgHtml: TemplateResult;
+}
+
+const choices: Choice[] = [
+  {
+    name: "rock",
+    borderColor: "border-rock",
+    shadowColor: "shadow-rock-to",
+    imgHtml: html`<img src=${rock} alt="Rock" />`,
+  },
+  {
+    name: "paper",
+    borderColor: "border-paper",
+    shadowColor: "shadow-paper-to",
+    imgHtml: html`<img src=${paper} alt="Paper" />`,
+  },
+  {
+    name: "scissors",
+    borderColor: "border-scissors",
+    shadowColor: "shadow-scissors-to",
+    imgHtml: html`<img src=${scissors} alt="Scissors" />`,
+  },
+];
 
 const state = { show_rules: false, score: 12, step: 1 };
 
@@ -29,6 +58,17 @@ const rulesModalHtml = html`<div
   </button>
 </div>`;
 
+const choiceHtml = (choice: Choice) =>
+  html` <button
+    class="${choice.borderColor} ${choice.shadowColor} shadow-solid-bottom relative rounded-full border-16"
+  >
+    <span
+      class="flex h-24 w-24 items-center justify-center rounded-full bg-slate-300"
+    >
+      ${choice.imgHtml}
+    </span>
+  </button>`;
+
 const step1Html = () => html`
   <div
     class="w-stretch aspect-ratio-1-1 relative m-16 max-w-xs bg-contain bg-center bg-no-repeat"
@@ -36,41 +76,17 @@ const step1Html = () => html`
   >
     <!-- Paper -->
     <div class="absolute top-0 left-0 -translate-x-1/4 -translate-y-1/4">
-      <button
-        class="from-paper-from to-paper-to relative rounded-full bg-gradient-to-b p-4"
-      >
-        <span
-          class="flex h-24 w-24 items-center justify-center rounded-full bg-slate-300"
-        >
-          <img src=${paper} alt="Paper" />
-        </span>
-      </button>
+      ${choiceHtml(choices[1])}
     </div>
 
     <!-- Scissors -->
     <div class="absolute top-0 right-0 translate-x-1/4 -translate-y-1/4">
-      <button
-        class="from-scissors-from to-scissors-to relative rounded-full bg-gradient-to-b p-4"
-      >
-        <span
-          class="flex h-24 w-24 items-center justify-center rounded-full bg-slate-300"
-        >
-          <img src=${scissors} alt="Scissors" />
-        </span>
-      </button>
+      ${choiceHtml(choices[2])}
     </div>
 
     <!-- Rock -->
     <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-0">
-      <button
-        class="from-rock-from to-rock-to relative rounded-full bg-gradient-to-b p-4"
-      >
-        <span
-          class="flex h-24 w-24 items-center justify-center rounded-full bg-slate-300"
-        >
-          <img src=${rock} alt="Rock" />
-        </span>
-      </button>
+      ${choiceHtml(choices[0])}
     </div>
   </div>
 `;

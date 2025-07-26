@@ -3,15 +3,15 @@
 
 @theme {
   /* Primary */
-  --color-scissors-from: hsl(39, 89%, 49%);
+  --color-scissors: hsl(39, 89%, 49%);
   --color-scissors-to: hsl(40, 84%, 53%);
-  --color-paper-from: hsl(230, 89%, 62%);
+  --color-paper: hsl(230, 89%, 62%);
   --color-paper-to: hsl(230, 89%, 65%);
-  --color-rock-from: hsl(349, 71%, 52%);
+  --color-rock: hsl(349, 71%, 52%);
   --color-rock-to: hsl(349, 70%, 56%);
-  --color-lizard-from: hsl(261, 73%, 60%);
+  --color-lizard: hsl(261, 73%, 60%);
   --color-lizard-to: hsl(261, 72%, 63%);
-  --color-spock-from: hsl(189, 59%, 53%);
+  --color-spock: hsl(189, 59%, 53%);
   --color-spock-to: hsl(189, 58%, 57%);
 
   /* Neutral */
@@ -50,3 +50,6 @@ body {
   line-height: .5rem;
 }
 
+.shadow-solid-bottom {
+  box-shadow: 0 6px 0 0 color-mix(in srgb, var(--tw-shadow-color) 50%, black);
+}
