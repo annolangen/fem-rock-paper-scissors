@@ -35,25 +35,64 @@ const choices: Choice[] = [
   },
 ];
 
-const state = { show_rules: false, score: 12, step: 1 };
+const state = {
+  showRules: false,
+  score: 0,
+  step: 4,
+  youPick: choices[0],
+  housePick: choices[0],
+  outcome: "YOU WIN",
+};
 
-const pageHtml = html` Score Rules You Picked The House Picked You Win You Lose
-Play Again`;
+const score = {
+  rock: {
+    rock: 0,
+    paper: -1,
+    scissors: 1,
+  },
+  paper: {
+    rock: 1,
+    paper: 0,
+    scissors: -1,
+  },
+  scissors: {
+    rock: -1,
+    paper: 1,
+    scissors: 0,
+  },
+};
+
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+async function pick(c: Choice) {
+  state.youPick = c;
+  state.step = 2;
+  renderBody();
+  await wait(500);
+  state.housePick = choices[Math.floor(Math.random() * choices.length)];
+  renderBody();
+  await wait(500);
+  state.step = 3;
+  renderBody();
+  await wait(500);
+  state.step = 4;
+  const delta = score[state.youPick.name][state.housePick.name];
+  state.outcome = delta > 0 ? "YOU WIN" : delta < 0 ? "YOU LOSE" : "DRAW";
+  state.score += delta;
+  renderBody();
+}
 
 const rulesModalHtml = html`<div
   class="absolute flex h-screen w-screen flex-col items-center justify-around bg-white md:m-24 md:h-100 md:w-100 md:rounded"
 >
   <div class="w-stretch m-4 flex justify-center md:flex-row md:justify-between">
     <div class="text-dark-text px-4 text-3xl font-bold">RULES</div>
-    <button
-      class="hidden md:block"
-      @click="${() => (state.show_rules = false)}"
-    >
+    <button class="hidden md:block" @click="${() => (state.showRules = false)}">
       <img src=${close} alt="Close" />
     </button>
   </div>
   <img src=${rules} alt="Rules" />
-  <button class="md:hidden" @click="${() => (state.show_rules = false)}">
+  <button class="md:hidden" @click="${() => (state.showRules = false)}">
     <img src=${close} alt="Close" />
   </button>
 </div>`;
@@ -69,6 +108,9 @@ const choiceHtml = (choice: Choice) =>
     </span>
   </button>`;
 
+const pickableChoiceHtml = (c: Choice) =>
+  html`<div @click="${() => pick(c)}">${choiceHtml(c)}</div>`;
+
 const step1Html = () => html`
   <div
     class="w-stretch aspect-ratio-1-1 relative m-16 max-w-xs bg-contain bg-center bg-no-repeat"
@@ -76,22 +118,61 @@ const step1Html = () => html`
   >
     <!-- Paper -->
     <div class="absolute top-0 left-0 -translate-x-1/4 -translate-y-1/4">
-      ${choiceHtml(choices[1])}
+      ${pickableChoiceHtml(choices[1])}
     </div>
 
     <!-- Scissors -->
     <div class="absolute top-0 right-0 translate-x-1/4 -translate-y-1/4">
-      ${choiceHtml(choices[2])}
+      ${pickableChoiceHtml(choices[2])}
     </div>
 
     <!-- Rock -->
     <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-0">
-      ${choiceHtml(choices[0])}
+      ${pickableChoiceHtml(choices[0])}
     </div>
   </div>
 `;
 
-const stepsHtml = [step1Html];
+const twoChoicesHtml = (you: TemplateResult, house: TemplateResult) =>
+  html` <div
+    class="w-stretch relative flex max-w-xs flex-row justify-center bg-contain bg-center bg-no-repeat text-white"
+  >
+    <div class="grid w-[80vw] grid-cols-2 justify-items-center gap-10">
+      ${you} ${house}
+      <span class="text-sm tracking-widest text-white">YOU PICKED</span>
+      <span class="text-sm tracking-widest text-white">THE HOUSE PICKED</span>
+    </div>
+  </div>`;
+
+const step2Html = () => html`
+  ${twoChoicesHtml(
+    choiceHtml(state.youPick),
+    html`<span class="w-10" h-10></span>`
+  )}
+`;
+
+const step3Html = () => html`
+  ${twoChoicesHtml(choiceHtml(state.youPick), choiceHtml(state.housePick))}
+`;
+
+const step4Html = () => html`
+  <div class="flex flex-col justify-between">
+    ${twoChoicesHtml(choiceHtml(state.youPick), choiceHtml(state.housePick))}
+    <h1
+      class="mt-16 mb-4 self-center text-5xl font-bold tracking-wider text-white"
+    >
+      ${state.outcome}
+    </h1>
+    <button
+      class="text-dark-text self-center rounded-lg bg-white px-16 py-2 text-sm tracking-widest"
+      @click="${() => (state.step = 1)}"
+    >
+      PLAY AGAIN
+    </button>
+  </div>
+`;
+
+const stepsHtml = [step1Html, step2Html, step3Html, step4Html];
 
 const bodyHtml = () => html`
   <div class="flex h-screen flex-col items-center justify-between">
@@ -103,7 +184,7 @@ const bodyHtml = () => html`
         <span>PAPER</span>
         <span>SCISSORS</span>
       </div>
-      <div class="flex flex-col items-center rounded bg-slate-100 p-2">
+      <div class="flex flex-col justify-items-center rounded bg-slate-100 p-2">
         <span class="text-score-text text-xxs">SCORE</span>
         <span class="text-dark-text px-4 text-3xl font-extrabold"
           >${state.score}</span
@@ -113,11 +194,11 @@ const bodyHtml = () => html`
     ${stepsHtml[state.step - 1]()}
     <button
       class="bordered m-12 rounded-md border-1 border-slate-300 px-10 py-2 tracking-widest text-slate-300 md:self-end"
-      @click="${() => (state.show_rules = true)}"
+      @click="${() => (state.showRules = true)}"
     >
       RULES
     </button>
-    ${state.show_rules ? rulesModalHtml : null}
+    ${state.showRules ? rulesModalHtml : null}
   </div>
 `;
 
