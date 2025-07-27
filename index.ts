@@ -182,9 +182,7 @@ const outcomeHtml = () => html`
 `;
 
 const lateStepHtml = () =>
-  html` <div
-    class="flex flex-wrap justify-center gap-x-16 gap-y-8 md:flex-nowrap"
-  >
+  html` <div class="flex flex-wrap justify-center gap-8 md:flex-nowrap">
     ${youHtml()} ${state.step === 4 ? outcomeHtml() : null} ${houseHtml()}
   </div>`;
 
