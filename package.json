@@ -4,7 +4,7 @@
   "description": "![Design preview for the rock-paper-scissors form coding challenge](preview.jpg)",
   "scripts": {
     "format": "prettier --write \"*.{ts,html}\"",
-    "build": "parcel build --public-url ./index.html",
+    "build": "parcel build --public-url ./ index.html",
     "dev": "parcel index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
