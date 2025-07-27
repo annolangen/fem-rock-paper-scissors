@@ -38,7 +38,7 @@ const choices: Choice[] = [
 const state = {
   showRules: false,
   score: 0,
-  step: 4,
+  step: 1,
   youPick: choices[0],
   housePick: choices[0],
   outcome: "YOU WIN",
@@ -99,7 +99,7 @@ const rulesModalHtml = html`<div
 
 const choiceHtml = (choice: Choice, extraClass = "") =>
   html` <button
-    class="${choice.borderColor} ${choice.shadowColor} ${extraClass} shadow-solid-bottom relative rounded-full border-16"
+    class="${choice.borderColor} ${choice.shadowColor} ${extraClass} shadow-solid-bottom relative m-4 rounded-full border-16"
   >
     <span
       class="flex h-24 w-24 items-center justify-center rounded-full bg-slate-300"
@@ -133,41 +133,47 @@ const step1Html = () => html`
   </div>
 `;
 
-const twoChoicesHtml = (you: TemplateResult, house: TemplateResult) =>
-  html` <div
-    class="w-stretch relative flex max-w-xs flex-row justify-center bg-contain bg-center bg-no-repeat text-white"
-  >
-    <div class="grid w-[80vw] grid-cols-2 justify-items-center gap-10">
-      ${you} ${house}
-      <span class="text-sm tracking-widest text-white">YOU PICKED</span>
-      <span class="text-sm tracking-widest text-white">THE HOUSE PICKED</span>
+const youHtml = () =>
+  html`<div class="order-1 flex flex-col items-center">
+    <span class="order-2 text-sm tracking-widest text-white md:order-1 md:mb-8"
+      >YOU PICKED</span
+    >
+    <div class="order-1 md:order-2">
+      ${choiceHtml(
+        state.youPick,
+        state.outcome === "YOU WIN" && state.step === 4 ? "rippled-border" : ""
+      )}
+    </div>
+  </div> `;
+
+const houseHtml = () =>
+  html`<div class="h-stretch order-2 flex flex-col items-center md:order-3">
+    <span class="order-2 text-sm tracking-widest text-white md:order-1 md:mb-8"
+      >THE HOUSE PICKED</span
+    >
+    <div class="h-stretch order-1 md:order-2">
+      ${state.step == 2
+        ? html`<div
+            class="mt-8 mb-4 h-24 w-24 self-center rounded-full bg-[var(--background-to)]"
+          ></div>`
+        : choiceHtml(
+            state.housePick,
+            state.outcome === "YOU LOSE" && state.step === 4
+              ? "rippled-border"
+              : ""
+          )}
     </div>
   </div>`;
 
-const step2Html = () => html`
-  ${twoChoicesHtml(
-    choiceHtml(state.youPick),
-    html`<span class="w-10" h-10></span>`
-  )}
-`;
-
-const step3Html = () => html`
-  ${twoChoicesHtml(choiceHtml(state.youPick), choiceHtml(state.housePick))}
-`;
-
-const step4Html = () => html`
-  <div class="flex flex-col justify-between">
-    ${twoChoicesHtml(
-      choiceHtml(state.youPick, "rippled-border"),
-      choiceHtml(state.housePick)
-    )}
+const outcomeHtml = () => html`
+  <div class="order-3 flex flex-col items-center self-center md:order-2">
     <h1
-      class="mt-16 mb-4 self-center text-5xl font-bold tracking-wider text-white"
+      class="mt-16 mb-4 self-center text-5xl font-bold tracking-wider text-white md:mt-0"
     >
       ${state.outcome}
     </h1>
     <button
-      class="text-dark-text self-center rounded-lg bg-white px-16 py-2 text-sm tracking-widest"
+      class="text-dark-text self-center rounded-lg bg-white px-16 py-2 text-sm tracking-widest hover:text-red-600"
       @click="${() => (state.step = 1)}"
     >
       PLAY AGAIN
@@ -175,7 +181,12 @@ const step4Html = () => html`
   </div>
 `;
 
-const stepsHtml = [step1Html, step2Html, step3Html, step4Html];
+const lateStepHtml = () =>
+  html` <div
+    class="flex flex-wrap justify-center gap-x-16 gap-y-8 md:flex-nowrap"
+  >
+    ${youHtml()} ${state.step === 4 ? outcomeHtml() : null} ${houseHtml()}
+  </div>`;
 
 const bodyHtml = () => html`
   <div class="flex h-screen flex-col items-center justify-between">
@@ -194,7 +205,7 @@ const bodyHtml = () => html`
         >
       </div>
     </div>
-    ${stepsHtml[state.step - 1]()}
+    ${state.step === 1 ? step1Html() : lateStepHtml()}
     <button
       class="bordered m-12 rounded-md border-1 border-slate-300 px-10 py-2 tracking-widest text-slate-300 md:self-end"
       @click="${() => (state.showRules = true)}"
